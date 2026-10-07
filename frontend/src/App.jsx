@@ -4,7 +4,7 @@ import { canSubmitVote } from './pollUtils';
 
 const API = import.meta.env.VITE_API_URL || '/api';
 const WS = import.meta.env.VITE_WS_URL || `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api`;
-async function request(path, options = {}) { const headers = { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) }; const res = await fetch(API + path, { credentials: 'include', ...options, headers }); const body = await res.json().catch(() => ({})); if (!res.ok) throw new Error(body.error?.message || 'Something went wrong'); return body.data; }
+async function request(path, options = {}) { const headers = { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) }; const res = await fetch(API + path, { ...options, credentials: 'include', headers }); const body = await res.json().catch(() => ({})); if (!res.ok) throw new Error(body.error?.message || 'Something went wrong'); return body.data; }
 function publicPollUrl(id) { return new URL(`/poll/${encodeURIComponent(id)}`, window.location.origin).toString(); }
 
 function Shell({ children, user, onLogout, onHome }) { return <div className="app-shell"><header className="nav"><button className="brand" onClick={onHome}><span className="brand-mark"><Activity size={18}/></span> pulse</button><div className="nav-right">{user ? <><span className="user-email">{user.email}</span><button className="icon-button" title="Sign out" onClick={onLogout}><LogOut size={17}/></button></> : <span className="nav-kicker">LIVE POLLING, SIMPLIFIED</span>}</div></header><main>{children}</main></div> }
