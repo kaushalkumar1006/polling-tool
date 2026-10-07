@@ -1,9 +1,22 @@
 package app
 
 import (
+	"net/http"
 	"testing"
 	"time"
 )
+
+func TestProductionSessionCookieIsHostOnly(t *testing.T) {
+	a := &App{cfg: Config{CookieSecure: true}}
+	cookie := a.sessionCookie("token", 86400)
+
+	if cookie.Name != "__Host-session" || cookie.Domain != "" || cookie.Path != "/" {
+		t.Fatalf("expected a host-only production cookie, got %#v", cookie)
+	}
+	if !cookie.Secure || !cookie.HttpOnly || cookie.SameSite != http.SameSiteNoneMode {
+		t.Fatalf("expected Secure, HttpOnly, SameSite=None, got %#v", cookie)
+	}
+}
 
 func TestValidatePollRejectsDuplicateOptions(t *testing.T) {
 	_, err := validatePoll("Choose a direction", []string{"React", "react"}, nil)
